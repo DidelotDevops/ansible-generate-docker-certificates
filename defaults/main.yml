@@ -7,7 +7,7 @@ dds_host: "{{ ansible_docker0.ipv4.address|default('127.0.0.1') }}"
 dds_common_name: "{{ dds_host }}" 
 dds_passphrase: Phrase123!
 dds_server_cert_path: /etc/docker
-dds_user_home_dir: "~"
+dds_user_home_dir: "{{ ansible_env.HOME }}"
 dds_env_shell_path: "{{ dds_user_home_dir }}"
 dds_client_cert_path: "{{ dds_user_home_dir }}/.docker"
 dds_install_shell: yes
