@@ -20,8 +20,8 @@
     PASSKEY: "{{ dds_passphrase }}"
   no_log: True
 
-- include: generate_client_certs.yml
-- include: generate_server_certs.yml
+- include_tasks: generate_client_certs.yml
+- include_tasks: generate_server_certs.yml
   become: true
 
 - name: Install shell script for setting DOCKER env vars
