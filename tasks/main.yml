@@ -1,12 +1,15 @@
 ---
 # main.yml
-- name: Check that the cert directories exists
+- name: Check that the client cert directories exists
   file:
     state: directory
-    path: "{{ item }}"
-  with_items:
-  - "{{ dds_client_cert_path }}"
-  - "{{ dds_server_cert_path }}"
+    path: "{{ dds_client_cert_path }}"
+
+- name: Check that the server cert directories exists
+  file:
+    state: directory
+    path: "{{ dds_server_cert_path }}"
+  become: true
 
 - name: Generate ca-key.pem
   command: "openssl genrsa -aes256 -passout env:PASSKEY -out {{ dds_client_cert_path }}/ca-key.pem 4096"
