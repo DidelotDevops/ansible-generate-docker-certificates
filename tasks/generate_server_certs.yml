@@ -4,22 +4,27 @@
   copy:
     content: "{{ dds_ca_pem.stdout }}"
     dest: "{{ dds_server_cert_path }}/ca.pem"
+  become: yes
 
 - name: Create server key
   command: openssl genrsa -out {{ dds_server_cert_path }}/server-key.pem 4096
+  become: yes
 
 - name: Create the server CSR
   command: "openssl req -subj '/CN={{ dds_host }}' -sha256 -new -key {{ dds_server_cert_path }}/server-key.pem -out {{ dds_server_cert_path }}/server.csr"
+  become: yes
 
 - name: Create extfile
   copy:
     content: "subjectAltName = IP:{{ dds_host }}{{ ',IP:127.0.0.1' if dds_host != '127.0.0.1' }}"
     dest: "{{ dds_server_cert_path }}/extfile.cnf"
+  become: yes
 
 - name: Create the server certificate
   command: "openssl x509 -req -days 365 -sha256 -in {{ dds_server_cert_path }}/server.csr -CA {{ dds_client_cert_path }}/ca.pem -CAkey {{ dds_client_cert_path }}/ca-key.pem -CAcreateserial -out {{ dds_server_cert_path }}/server-cert.pem -extfile {{ dds_server_cert_path }}/extfile.cnf -passin env:PASSKEY"
   environment:
     PASSKEY: "{{ dds_passphrase }}"
+  become: yes
 
 - name: Set file permissions
   file:
@@ -29,6 +34,7 @@
     - ca.pem
     - server-cert.pem
     - server-key.pem
+  become: yes
 
 - name: Remove extfile and server.csr
   file:
@@ -37,8 +43,10 @@
   with_items:
   - server.csr
   - extfile.cnf
+  become: yes
 
 - name: Remove ca-key.pem
   file:
     path: "{{ dds_client_cert_path }}/ca-key.pem"
     state: absent
+  become: yes
